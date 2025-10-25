@@ -1,0 +1,542 @@
+// Draw pebbles
+            if (temp_pebble_array[i][j] > 0) {
+                float pebbleColor = 1.0f / (float)temp_pebble_array[i][j];
+                glColor3f(1.0f, pebbleColor, 0.0f);
+                glPushMatrix();
+                glTranslatef(-(float)BOARD_HEIGHT / 2.0f, -(float)BOARD_WIDTH / 2.0f, 0.0);
+                glTranslatef(j, BOARD_WIDTH - i, 0.0);
+                glTranslatef(0.5, 0.5, 0.5);
+                float pebbleSize = 0.1f * (float)temp_pebble_array[i][j];
+                glutSolidSphere(pebbleSize, 6, 6);
+                glPopMatrix();
+            }
+        }
+    }
+    drawPacman();
+}
+
+// ==================== UI RENDERING ====================
+void drawMenu() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // Title
+    drawText(-8.0f, 10.0f, GLUT_BITMAP_TIMES_ROMAN_24, 
+             "PAC-MAN 3D - PROFESSIONAL EDITION", 1.0f, 1.0f, 0.0f);
+    
+    // Menu options
+    const char* options[] = {"START GAME", "HELP", "HIGH SCORE", "EXIT"};
+    float startY = 5.0f;
+    
+    for (int i = 0; i < MENU_OPTIONS; i++) {
+        if (i == menuSelection) {
+            drawText(-3.0f, startY - i * 2.0f, GLUT_BITMAP_HELVETICA_18, 
+                    "> ", 1.0f, 0.0f, 0.0f);
+        }
+        drawText(-2.0f, startY - i * 2.0f, GLUT_BITMAP_HELVETICA_18, 
+                options[i], 1.0f, 1.0f, 1.0f);
+    }
+    
+    // Instructions
+    drawText(-10.0f, -8.0f, GLUT_BITMAP_HELVETICA_12, 
+             "Use UP/DOWN arrows to navigate, ENTER to select", 0.7f, 0.7f, 0.7f);
+    
+    // Credits
+    drawText(-7.0f, -12.0f, GLUT_BITMAP_HELVETICA_10, 
+             "Developed by: Shivam Shroff | IT 441 Computer Graphics", 0.5f, 0.5f, 0.5f);
+    
+    glutSwapBuffers();
+}
+
+void drawHelpScreen() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // Title
+    drawText(-4.0f, 12.0f, GLUT_BITMAP_TIMES_ROMAN_24, 
+             "HELP MENU", 1.0f, 1.0f, 0.0f);
+    
+    // Controls
+    drawText(-8.0f, 9.0f, GLUT_BITMAP_HELVETICA_18, 
+             "CONTROLS:", 0.0f, 1.0f, 1.0f);
+    drawText(-8.0f, 7.5f, GLUT_BITMAP_HELVETICA_12, 
+             "Arrow Keys - Move Pacman", 1.0f, 1.0f, 1.0f);
+    drawText(-8.0f, 6.5f, GLUT_BITMAP_HELVETICA_12, 
+             "P - Pause Game", 1.0f, 1.0f, 1.0f);
+    drawText(-8.0f, 5.5f, GLUT_BITMAP_HELVETICA_12, 
+             "ESC - Return to Menu", 1.0f, 1.0f, 1.0f);
+    
+    // Objectives
+    drawText(-8.0f, 3.5f, GLUT_BITMAP_HELVETICA_18, 
+             "OBJECTIVES:", 0.0f, 1.0f, 1.0f);
+    drawText(-8.0f, 2.0f, GLUT_BITMAP_HELVETICA_12, 
+             "• Eat all pebbles to win", 1.0f, 1.0f, 1.0f);
+    drawText(-8.0f, 1.0f, GLUT_BITMAP_HELVETICA_12, 
+             "• Avoid ghosts or lose a life", 1.0f, 1.0f, 1.0f);
+    drawText(-8.0f, 0.0f, GLUT_BITMAP_HELVETICA_12, 
+             "• Eat super pebbles (large) to make ghosts vulnerable", 1.0f, 1.0f, 1.0f);
+    drawText(-8.0f, -1.0f, GLUT_BITMAP_HELVETICA_12, 
+             "• Eat vulnerable ghosts for bonus points", 1.0f, 1.0f, 1.0f);
+    
+    // Scoring
+    drawText(-8.0f, -3.0f, GLUT_BITMAP_HELVETICA_18, 
+             "SCORING:", 0.0f, 1.0f, 1.0f);
+    char scoreText[100];
+    sprintf(scoreText, "• Normal Pebble: %d points", NORMAL_PEBBLE_POINTS);
+    drawText(-8.0f, -4.5f, GLUT_BITMAP_HELVETICA_12, scoreText, 1.0f, 1.0f, 1.0f);
+    sprintf(scoreText, "• Super Pebble: %d points", SUPER_PEBBLE_POINTS);
+    drawText(-8.0f, -5.5f, GLUT_BITMAP_HELVETICA_12, scoreText, 1.0f, 1.0f, 1.0f);
+    sprintf(scoreText, "• Ghost: %d points", GHOST_EAT_POINTS);
+    drawText(-8.0f, -6.5f, GLUT_BITMAP_HELVETICA_12, scoreText, 1.0f, 1.0f, 1.0f);
+    
+    // Ghost info
+    drawText(-8.0f, -8.5f, GLUT_BITMAP_HELVETICA_18, 
+             "GHOSTS:", 0.0f, 1.0f, 1.0f);
+    drawText(-8.0f, -10.0f, GLUT_BITMAP_HELVETICA_12, 
+             "• Red (Blinky) - Fast and aggressive", 1.0f, 0.0f, 0.0f);
+    drawText(-8.0f, -11.0f, GLUT_BITMAP_HELVETICA_12, 
+             "• Pink (Pinky) - Tries to ambush you", 1.0f, 0.75f, 0.8f);
+    drawText(-8.0f, -12.0f, GLUT_BITMAP_HELVETICA_12, 
+             "• Cyan (Inky) - Unpredictable movement", 0.0f, 1.0f, 1.0f);
+    drawText(-8.0f, -13.0f, GLUT_BITMAP_HELVETICA_12, 
+             "• Orange (Clyde) - Patrols the maze", 1.0f, 0.6f, 0.0f);
+    
+    drawText(-4.0f, -15.0f, GLUT_BITMAP_HELVETICA_12, 
+             "Press ESC to return to menu", 0.7f, 0.7f, 0.7f);
+    
+    glutSwapBuffers();
+}
+
+void drawPauseScreen() {
+    drawMaze();
+    for (int i = 0; i < NUM_GHOSTS; i++) {
+        ghosts[i]->draw();
+    }
+    
+    // Semi-transparent overlay
+    glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_QUADS);
+    glVertex2f(-20.0f, -20.0f);
+    glVertex2f(20.0f, -20.0f);
+    glVertex2f(20.0f, 20.0f);
+    glVertex2f(-20.0f, 20.0f);
+    glEnd();
+    glDisable(GL_BLEND);
+    
+    drawText(-3.0f, 2.0f, GLUT_BITMAP_TIMES_ROMAN_24, 
+             "PAUSED", 1.0f, 1.0f, 0.0f);
+    drawText(-5.0f, 0.0f, GLUT_BITMAP_HELVETICA_18, 
+             "Press P to resume", 1.0f, 1.0f, 1.0f);
+    drawText(-5.0f, -1.5f, GLUT_BITMAP_HELVETICA_18, 
+             "Press ESC for menu", 1.0f, 1.0f, 1.0f);
+    
+    glutSwapBuffers();
+}
+
+void drawGameOverScreen() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    drawText(-5.0f, 8.0f, GLUT_BITMAP_TIMES_ROMAN_24, 
+             "GAME OVER", 1.0f, 0.0f, 0.0f);
+    
+    char text[100];
+    sprintf(text, "Final Score: %d", score);
+    drawText(-4.0f, 5.0f, GLUT_BITMAP_HELVETICA_18, text, 1.0f, 1.0f, 0.0f);
+    
+    sprintf(text, "Time: %02d:%02d", gameTimeSeconds / 60, gameTimeSeconds % 60);
+    drawText(-3.0f, 3.0f, GLUT_BITMAP_HELVETICA_18, text, 1.0f, 1.0f, 1.0f);
+    
+    if (score > highScore) {
+        drawText(-4.0f, 1.0f, GLUT_BITMAP_HELVETICA_18, 
+                "NEW HIGH SCORE!", 0.0f, 1.0f, 0.0f);
+    }
+    
+    drawText(-6.0f, -2.0f, GLUT_BITMAP_HELVETICA_18, 
+             "Press ENTER to return to menu", 0.7f, 0.7f, 0.7f);
+    
+    glutSwapBuffers();
+}
+
+void drawWinScreen() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    drawText(-5.0f, 8.0f, GLUT_BITMAP_TIMES_ROMAN_24, 
+             "YOU WIN!", 0.0f, 1.0f, 0.0f);
+    
+    char text[100];
+    sprintf(text, "Final Score: %d", score);
+    drawText(-4.0f, 5.0f, GLUT_BITMAP_HELVETICA_18, text, 1.0f, 1.0f, 0.0f);
+    
+    sprintf(text, "Time: %02d:%02d", gameTimeSeconds / 60, gameTimeSeconds % 60);
+    drawText(-3.0f, 3.0f, GLUT_BITMAP_HELVETICA_18, text, 1.0f, 1.0f, 1.0f);
+    
+    sprintf(text, "Level: %d", level);
+    drawText(-2.0f, 1.0f, GLUT_BITMAP_HELVETICA_18, text, 1.0f, 1.0f, 1.0f);
+    
+    if (score > highScore) {
+        drawText(-4.0f, -1.0f, GLUT_BITMAP_HELVETICA_18, 
+                "NEW HIGH SCORE!", 0.0f, 1.0f, 0.0f);
+    }
+    
+    drawText(-6.0f, -4.0f, GLUT_BITMAP_HELVETICA_18, 
+             "Press ENTER to return to menu", 0.7f, 0.7f, 0.7f);
+    
+    glutSwapBuffers();
+}
+
+void drawHUD() {
+    char text[100];
+    
+    // Lives
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glRasterPos2f(-12.0f, 18.0f);
+    sprintf(text, "Lives: %d", lives);
+    for (char* c = text; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    }
+    
+    // Title
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glRasterPos2f(-3.0f, 18.0f);
+    sprintf(text, "PAC-MAN");
+    for (char* c = text; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+    }
+    
+    // Score
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glRasterPos2f(6.0f, 18.0f);
+    sprintf(text, "Score: %d", score);
+    for (char* c = text; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    }
+    
+    // Timer
+    glColor3f(0.0f, 1.0f, 1.0f);
+    glRasterPos2f(-12.0f, 16.0f);
+    sprintf(text, "Time: %02d:%02d", gameTimeSeconds / 60, gameTimeSeconds % 60);
+    for (char* c = text; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+    }
+    
+    // Level
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glRasterPos2f(6.0f, 16.0f);
+    sprintf(text, "Level: %d", level);
+    for (char* c = text; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *c);
+    }
+}
+
+// ==================== GAME LOGIC ====================
+void updateGame() {
+    if (currentState != STATE_PLAYING || gameOver) return;
+    
+    updateGameTime();
+    
+    // Tunnel wraparound for Pacman
+    if ((int)pacmanX == 27 && (int)pacmanY == 14 && pacmanAngle == 0.0) {
+        pacmanX = 0.0;
+        isAnimating = true;
+    } else if ((int)(pacmanX + 0.9) == 0 && (int)pacmanY == 14 && pacmanAngle == 180.0) {
+        pacmanX = 27.0;
+        isAnimating = true;
+    }
+    
+    // Move Pacman
+    if (isAnimating) {
+        movePacman();
+    }
+    
+    // Wall collision
+    if (!isCellOpen((int)(pacmanX + cos(M_PI / 180.0 * pacmanAngle)), 
+                    (int)(pacmanY + sin(M_PI / 180.0 * pacmanAngle))) &&
+        pacmanX - (int)pacmanX < 0.1 && pacmanY - (int)pacmanY < 0.1) {
+        isAnimating = false;
+    }
+    
+    // Pebble collection
+    int cellY = (int)(pacmanY + 0.5);
+    int cellX = (int)(pacmanX + 0.5);
+    
+    if (temp_pebble_array[cellY][cellX] == 1) {
+        temp_pebble_array[cellY][cellX] = 0;
+        pebbles_left--;
+        score += NORMAL_PEBBLE_POINTS;
+    } else if (temp_pebble_array[cellY][cellX] == 3) {
+        temp_pebble_array[cellY][cellX] = 0;
+        pebbles_left--;
+        score += SUPER_PEBBLE_POINTS;
+        for (int i = 0; i < NUM_GHOSTS; i++) {
+            if (!ghosts[i]->eaten) {
+                ghosts[i]->makeVulnerable();
+            }
+        }
+    }
+    
+    // Win condition
+    if (pebbles_left == 0) {
+        currentState = STATE_WIN;
+        if (score > highScore) {
+            highScore = score;
+        }
+        return;
+    }
+    
+    // Update ghosts
+    for (int i = 0; i < NUM_GHOSTS; i++) {
+        if (startCountdown == 0) {
+            ghosts[i]->update();
+        }
+        
+        // Ghost AI
+        if (!ghosts[i]->inJail && ghosts[i]->x - (int)ghosts[i]->x < 0.1 && 
+            ghosts[i]->y - (int)ghosts[i]->y < 0.1) {
+            bool openDirections[4];
+            for (int ang = 0; ang < 4; ang++) {
+                openDirections[ang] = isCellOpen(
+                    (int)(ghosts[i]->x + cos(M_PI / 180.0 * ang * 90.0)),
+                    (int)(ghosts[i]->y + sin(M_PI / 180.0 * ang * 90.0))
+                );
+            }
+            
+            if (!ghosts[i]->eaten) {
+                ghosts[i]->chase(pacmanX, pacmanY, openDirections);
+            } else {
+                ghosts[i]->chase(13.0, 11.0, openDirections);
+            }
+        }
+        
+        // Jail collision detection
+        if (ghosts[i]->inJail && 
+            !isCellOpen((int)(ghosts[i]->x + cos(M_PI / 180.0 * ghosts[i]->angle)),
+                       (int)(ghosts[i]->y + sin(M_PI / 180.0 * ghosts[i]->angle))) &&
+            ghosts[i]->jailTimer > 0 &&
+            ghosts[i]->x - (int)ghosts[i]->x < 0.1 && 
+            ghosts[i]->y - (int)ghosts[i]->y < 0.1) {
+            ghosts[i]->angle = fmod((ghosts[i]->angle + 180.0), 360.0);
+        }
+        
+        if (startCountdown == 0) {
+            ghosts[i]->move();
+        }
+        
+        // Collision with Pacman
+        if (!ghosts[i]->eaten && ghosts[i]->catchPacman(pacmanX, pacmanY)) {
+            if (!ghosts[i]->edible) {
+                lives--;
+                if (lives == 0) {
+                    gameOver = true;
+                    currentState = STATE_GAME_OVER;
+                    if (score > highScore) {
+                        highScore = score;
+                    }
+                    return;
+                }
+                resetPacman();
+                resetGhosts();
+                break;
+            } else {
+                ghosts[i]->edible = false;
+                ghosts[i]->eaten = true;
+                ghosts[i]->speed = 0.1;
+                score += GHOST_EAT_POINTS;
+            }
+        }
+    }
+}
+
+// ==================== MAIN RENDERING ====================
+void display() {
+    switch (currentState) {
+        case STATE_MENU:
+            drawMenu();
+            break;
+        case STATE_HELP:
+            drawHelpScreen();
+            break;
+        case STATE_PAUSED:
+            drawPauseScreen();
+            break;
+        case STATE_GAME_OVER:
+            drawGameOverScreen();
+            break;
+        case STATE_WIN:
+            drawWinScreen();
+            break;
+        case STATE_PLAYING:
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            updateGame();
+            drawMaze();
+            for (int i = 0; i < NUM_GHOSTS; i++) {
+                ghosts[i]->draw();
+            }
+            drawHUD();
+            glutSwapBuffers();
+            break;
+    }
+    
+    glutPostRedisplay();
+}
+
+// ==================== INPUT HANDLING ====================
+void normalKeyboard(unsigned char key, int x, int y) {
+    if (key == 27) { // ESC key
+        if (currentState == STATE_PLAYING) {
+            currentState = STATE_PAUSED;
+            time(&pausedTime);
+        } else if (currentState == STATE_PAUSED || currentState == STATE_HELP) {
+            currentState = STATE_MENU;
+        }
+    } else if (key == 'p' || key == 'P') {
+        if (currentState == STATE_PLAYING) {
+            currentState = STATE_PAUSED;
+            time(&pausedTime);
+        } else if (currentState == STATE_PAUSED) {
+            currentState = STATE_PLAYING;
+            time_t resumeTime;
+            time(&resumeTime);
+            totalPausedDuration += (int)difftime(resumeTime, pausedTime);
+        }
+    } else if (key == 13) { // ENTER key
+        if (currentState == STATE_MENU) {
+            switch (menuSelection) {
+                case 0: // Start Game
+                    currentState = STATE_PLAYING;
+                    lives = INITIAL_LIVES;
+                    score = 0;
+                    level = 1;
+                    gameOver = false;
+                    resetPebbles();
+                    resetPacman();
+                    resetGhosts();
+                    time(&gameStartTime);
+                    totalPausedDuration = 0;
+                    break;
+                case 1: // Help
+                    currentState = STATE_HELP;
+                    break;
+                case 2: // High Score
+                    char text[100];
+                    sprintf(text, "High Score: %d", highScore);
+                    printf("%s\n", text);
+                    break;
+                case 3: // Exit
+                    exit(0);
+                    break;
+            }
+        } else if (currentState == STATE_GAME_OVER || currentState == STATE_WIN) {
+            currentState = STATE_MENU;
+            menuSelection = 0;
+        }
+    }
+    
+    if (startCountdown > 0) {
+        startCountdown--;
+    }
+}
+
+void specialKeyboard(int key, int x, int y) {
+    if (currentState == STATE_MENU) {
+        if (key == GLUT_KEY_UP) {
+            menuSelection = (menuSelection - 1 + MENU_OPTIONS) % MENU_OPTIONS;
+        } else if (key == GLUT_KEY_DOWN) {
+            menuSelection = (menuSelection + 1) % MENU_OPTIONS;
+        }
+    } else if (currentState == STATE_PLAYING) {
+        if (startCountdown > 0) {
+            startCountdown--;
+        }
+        
+        currentKey = key;
+        
+        if (key == GLUT_KEY_UP && (int)pacmanX - pacmanX > -0.1 && pacmanAngle != 270.0) {
+            if (isCellOpen(pacmanX, pacmanY - 1)) {
+                isAnimating = true;
+                pacmanAngle = 270.0;
+            }
+        } else if (key == GLUT_KEY_DOWN && (int)pacmanX - pacmanX > -0.1 && pacmanAngle != 90.0) {
+            if (isCellOpen(pacmanX, pacmanY + 1)) {
+                isAnimating = true;
+                pacmanAngle = 90.0;
+            }
+        } else if (key == GLUT_KEY_LEFT && (int)pacmanY - pacmanY > -0.1 && pacmanAngle != 180.0) {
+            if (isCellOpen(pacmanX - 1, pacmanY)) {
+                isAnimating = true;
+                pacmanAngle = 180.0;
+            }
+        } else if (key == GLUT_KEY_RIGHT && (int)pacmanY - pacmanY > -0.1 && pacmanAngle != 0.0) {
+            if (isCellOpen(pacmanX + 1, pacmanY)) {
+                isAnimating = true;
+                pacmanAngle = 0.0;
+            }
+        }
+    }
+}
+
+void specialKeyboardUp(int key, int x, int y) {
+    // Optional: Handle key release if needed
+}
+
+// ==================== INITIALIZATION ====================
+void initOpenGL() {
+    glEnable(GL_DEPTH_TEST);
+    glShadeModel(GL_SMOOTH);
+    
+    // Enable lighting
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_NORMALIZE);
+    
+    float lightDiffuse[4] = {1.0f, 1.0f, 0.0f, 0.0f};
+    float lightAmbient[4] = {1.0f, 0.0f, 1.0f, 1.0f};
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+    
+    // Set up projection
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0, 1.33, 0.005, 100.0);
+    
+    // Set up view
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(-1.5, 0.0, 40.0, -1.5, 0.0, 0.0, 0.0, 1.0, 0.0);
+}
+
+// ==================== MAIN ====================
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitWindowSize(1200, 780);
+    glutInitWindowPosition(100, 50);
+    glutCreateWindow("PAC-MAN 3D - Professional Edition");
+    
+    initOpenGL();
+    createDisplayLists();
+    
+    // Initialize ghosts
+    int startPositions[NUM_GHOSTS] = {11, 12, 15, 16};
+    for (int i = 0; i < NUM_GHOSTS; i++) {
+        ghosts[i] = new Ghost(startPositions[i], 14);
+    }
+    
+    resetPebbles();
+    resetGhosts();
+    
+    glutDisplayFunc(display);
+    glutKeyboardFunc(normalKeyboard);
+    glutSpecialFunc(specialKeyboard);
+    glutSpecialUpFunc(specialKeyboardUp);
+    
+    glutMainLoop();
+    
+    // Cleanup
+    for (int i = 0; i < NUM_GHOSTS; i++) {
+        delete ghosts[i];
+    }
+    
+    return 0;
+}
